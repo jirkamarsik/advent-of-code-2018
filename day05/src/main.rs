@@ -32,22 +32,19 @@ where
     unit_stack.len()
 }
 
-// fn kill_unit<I>(polymer: I, lower_unit: char, upper_unit: char) -> impl Iterator<Item = char>
-// where I: Iterator<Item = char>
-// {
-//     polymer.filter(|&unit| unit == lower_unit || unit == upper_unit)
-// }
+fn kill_unit<I>(polymer: I, lower_unit: char, upper_unit: char) -> impl Iterator<Item = char>
+where I: Iterator<Item = char>
+{
+    polymer.filter(move |&unit| unit != lower_unit && unit != upper_unit)
+}
 
 fn find_problematic_unit(polymer: &String) -> (String, usize) {
     let mut scores = HashMap::new();
-    // for upper_unit in 'A'..'Z' {
-    for upper_unit in 0x41..0x5B {
+    for upper_unit in b'A'..=b'Z' {
         // How to trick the compiler in inferring the type 'u8' for 'upper_unit'?
-        let upper_unit = (upper_unit as u8) as char;
+        let upper_unit = upper_unit as char;
         let lower_unit = upper_unit.to_ascii_lowercase();
-        let clean_polymer = polymer
-            .chars()
-            .filter(|&unit| unit != lower_unit && unit != upper_unit);
+        let clean_polymer = kill_unit(polymer.chars(), lower_unit, upper_unit);
         let final_length = reduce_polymer(clean_polymer, polymer.len());
         scores.insert(format!("{}/{}", upper_unit, lower_unit), final_length);
     }
