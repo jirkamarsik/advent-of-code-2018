@@ -5,6 +5,7 @@ use std::collections::HashSet;
 use std::io;
 use std::io::prelude::*;
 
+#[derive(PartialEq, Eq)]
 struct Rect {
     left: i32,
     top: i32,
@@ -17,6 +18,7 @@ struct Range {
     to: i32,
 }
 
+#[derive(PartialEq, Eq)]
 struct Claim {
     id: i32,
     rect: Rect,
@@ -87,7 +89,7 @@ fn rect_intersection(a: &Rect, b: &Rect) -> Option<Rect> {
     }
 }
 
-fn intersections(claims: &Vec<Claim>) -> Vec<Rect> {
+fn intersections(claims: &[Claim]) -> Vec<Rect> {
     let mut intersections = vec![];
 
     for i in 0..claims.len() - 1 {
@@ -101,7 +103,7 @@ fn intersections(claims: &Vec<Claim>) -> Vec<Rect> {
     intersections
 }
 
-fn contested_inches(claims: &Vec<Claim>) -> HashSet<(i32, i32)> {
+fn contested_inches(claims: &[Claim]) -> HashSet<(i32, i32)> {
     let intersections = intersections(claims);
     let mut inches = HashSet::new();
 
@@ -116,17 +118,14 @@ fn contested_inches(claims: &Vec<Claim>) -> HashSet<(i32, i32)> {
     inches
 }
 
-fn safe_claim<'a>(claims: &'a Vec<Claim>) -> Option<&'a Claim> {
+fn safe_claim(claims: &[Claim]) -> Option<&Claim> {
     claims
         .iter()
-        .filter(|Claim { rect: rect1, .. }| {
+        .find(|&claim1| {
             claims
                 .iter()
-                .filter(|Claim { rect: rect2, .. }| is_intersect_rect(rect1, rect2))
-                .count()
-                == 1
+                .all(|claim2| claim1 == claim2 || !is_intersect_rect(&claim1.rect, &claim2.rect))
         })
-        .next()
 }
 
 fn main() {

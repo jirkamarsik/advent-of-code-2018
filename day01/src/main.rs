@@ -12,11 +12,11 @@ fn parse_input() -> Vec<i32> {
     freq_changes
 }
 
-fn final_frequency(freq_changes: &Vec<i32>) -> i32 {
+fn final_frequency(freq_changes: &[i32]) -> i32 {
     freq_changes.iter().sum()
 }
 
-fn repeating_frequency(freq_changes: &Vec<i32>) -> Option<i32> {
+fn repeating_frequency(freq_changes: &[i32]) -> Option<i32> {
     let n = freq_changes.len();
     let mut big_delta = 0;
     let mut partial_deltas = Vec::with_capacity(n);

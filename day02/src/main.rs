@@ -25,19 +25,19 @@ where T: Iterator,
         *freq += 1;
     }
 
-    return freqs
+    freqs
 }
 
-fn checksum(codes: &Vec<String>) -> u32 {
+fn checksum(codes: &[String]) -> u32 {
     let mut doubles = 0;
     let mut triples = 0;
 
     for code in codes {
         let freqs = frequencies(code.chars());
-        if freqs.values().find(|f| **f == 2).is_some() {
+        if freqs.values().any(|&f| f == 2) {
             doubles += 1;
         }
-        if freqs.values().find(|f| **f == 3).is_some() {
+        if freqs.values().any(|&f| f == 3) {
             triples += 1;
         }
     }
@@ -45,7 +45,7 @@ fn checksum(codes: &Vec<String>) -> u32 {
     doubles * triples
 }
 
-fn find_boxes(codes: &Vec<String>) -> Option<String> {
+fn find_boxes(codes: &[String]) -> Option<String> {
     let code_length = codes[0].len();
     assert!(codes.iter().all(|code| code.len() == code_length));
 

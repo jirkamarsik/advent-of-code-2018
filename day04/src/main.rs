@@ -67,8 +67,8 @@ fn parse_input() -> Vec<Event> {
     events
 }
 
-fn record_naps(events: &Vec<Event>) -> HashMap<GuardID, Vec<TimeInterval>> {
-    let mut sleep_times = HashMap::new();
+fn record_naps(events: &[Event]) -> HashMap<GuardID, Vec<TimeInterval>> {
+    let mut sleep_times: HashMap<GuardID, Vec<TimeInterval>> = HashMap::new();
     let mut current_guard = None;
     let mut fell_asleep = None;
 
@@ -93,7 +93,7 @@ fn record_naps(events: &Vec<Event>) -> HashMap<GuardID, Vec<TimeInterval>> {
                 };
                 sleep_times
                     .entry(current_guard.unwrap())
-                    .or_insert_with(|| Vec::new())
+                    .or_default()
                     .push(nap);
                 fell_asleep = None;
             }
@@ -103,7 +103,7 @@ fn record_naps(events: &Vec<Event>) -> HashMap<GuardID, Vec<TimeInterval>> {
     sleep_times
 }
 
-fn find_best_opportunity_s1(events: &Vec<Event>) -> Opportunity {
+fn find_best_opportunity_s1(events: &[Event]) -> Opportunity {
     let guards_naps = record_naps(events);
 
     let sleepiest_guard = *guards_naps
@@ -126,7 +126,7 @@ fn find_best_opportunity_s1(events: &Vec<Event>) -> Opportunity {
     let sleepiest_minute = sleepy_minutes
         .iter()
         .enumerate()
-        .max_by_key(|(_, &s)| s)
+        .max_by_key(|&(_, &s)| s)
         .unwrap()
         .0;
     Opportunity {
@@ -135,7 +135,7 @@ fn find_best_opportunity_s1(events: &Vec<Event>) -> Opportunity {
     }
 }
 
-fn find_best_opportunity_s2(events: &Vec<Event>) -> Opportunity {
+fn find_best_opportunity_s2(events: &[Event]) -> Opportunity {
     let guards_naps = record_naps(events);
 
     let mut opportunities = HashMap::new();
