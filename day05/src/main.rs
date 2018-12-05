@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::io::Read;
 
 fn parse_input() -> String {
@@ -7,9 +6,9 @@ fn parse_input() -> String {
     buffer.trim().to_owned()
 }
 
-fn is_opposite_unit(a: &char, b: &char) -> bool {
-    (&a.to_ascii_uppercase() == b && &b.to_ascii_lowercase() == a)
-        || (&a.to_ascii_lowercase() == b && &b.to_ascii_uppercase() == a)
+fn is_opposite_unit(a: char, b: char) -> bool {
+    (a.to_ascii_uppercase() == b && b.to_ascii_lowercase() == a)
+        || (a.to_ascii_lowercase() == b && b.to_ascii_uppercase() == a)
 }
 
 fn reduce_polymer<I>(polymer: I, capacity: usize) -> usize
@@ -20,7 +19,7 @@ where
 
     for unit in polymer {
         match unit_stack.pop() {
-            Some(opposite_unit) if is_opposite_unit(&unit, &opposite_unit) => (),
+            Some(opposite_unit) if is_opposite_unit(unit, opposite_unit) => (),
             Some(other_unit) => {
                 unit_stack.push(other_unit);
                 unit_stack.push(unit);
@@ -33,23 +32,24 @@ where
 }
 
 fn kill_unit<I>(polymer: I, lower_unit: char, upper_unit: char) -> impl Iterator<Item = char>
-where I: Iterator<Item = char>
+where
+    I: Iterator<Item = char>,
 {
     polymer.filter(move |&unit| unit != lower_unit && unit != upper_unit)
 }
 
-fn find_problematic_unit(polymer: &String) -> (String, usize) {
-    let mut scores = HashMap::new();
-    for upper_unit in b'A'..=b'Z' {
-        // How to trick the compiler in inferring the type 'u8' for 'upper_unit'?
-        let upper_unit = upper_unit as char;
-        let lower_unit = upper_unit.to_ascii_lowercase();
-        let clean_polymer = kill_unit(polymer.chars(), lower_unit, upper_unit);
-        let final_length = reduce_polymer(clean_polymer, polymer.len());
-        scores.insert(format!("{}/{}", upper_unit, lower_unit), final_length);
-    }
-    let (unit, &length) = scores.iter().min_by_key(|&(_, &score)| score).unwrap();
-    (unit.clone(), length)
+
+fn find_problematic_unit(polymer: &str) -> (String, usize) {
+    (b'A'..=b'Z')
+        .map(|upper_unit| {
+            let upper_unit = upper_unit as char;
+            let lower_unit = upper_unit.to_ascii_lowercase();
+            let clean_polymer = kill_unit(polymer.chars(), lower_unit, upper_unit);
+            let final_length = reduce_polymer(clean_polymer, polymer.len());
+            (format!("{}/{}", upper_unit, lower_unit), final_length)
+        })
+        .min_by_key(|&(_, length)| length)
+        .unwrap()
 }
 
 fn main() {
