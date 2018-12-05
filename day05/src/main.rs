@@ -1,6 +1,11 @@
 use std::collections::HashMap;
 use std::io::Read;
 
+struct Cursors {
+    left: usize,
+    right: usize,
+}
+
 fn parse_input() -> Vec<u8> {
     let mut buffer = String::new();
     std::io::stdin().read_to_string(&mut buffer).unwrap();
@@ -15,20 +20,44 @@ fn is_opposite_unit(a: u8, b: u8) -> bool {
 }
 
 fn move_left(alive_map: &[bool], pos: usize) -> Option<usize> {
-    alive_map[..pos]
-        .iter()
-        .enumerate()
-        .rev()
-        .find(|&(_, &alive)| alive)
-        .map(|(new_pos, _)| new_pos)
+    for new_pos in (0..pos).rev() {
+        if alive_map[new_pos] {
+            return Some(new_pos)
+        }
+    }
+    None
 }
 
 fn move_right(alive_map: &[bool], pos: usize) -> Option<usize> {
-    alive_map[pos + 1..]
-        .iter()
-        .enumerate()
-        .find(|&(_, &alive)| alive)
-        .map(|(new_pos, _)| new_pos)
+    for new_pos in pos + 1..alive_map.len() {
+        if alive_map[new_pos] {
+            return Some(new_pos)
+        }
+    }
+    None
+}
+
+fn move_both_left(alive_map: &[bool], cursors: &Cursors) -> Option<Cursors> {
+    match move_left(alive_map, cursors.left) {
+        Some(left) => Some(Cursors { left, right: cursors.left }),
+        None       => None,
+    }
+}
+
+fn move_both_right(alive_map: &[bool], cursors: &Cursors) -> Option<Cursors> {
+    match move_right(alive_map, cursors.right) {
+        Some(right) => Some(Cursors { left: cursors.right, right }),
+        None        => None,
+    }
+}
+
+fn move_both_out(alive_map: &[bool], cursors: &Cursors) -> Option<Cursors> {
+    match (move_left(alive_map, cursors.left), move_right(alive_map, cursors.right)) {
+        (Some(left), Some(right)) => Some(Cursors { left, right }),
+        (Some(left), None)        => move_both_left(alive_map, &Cursors { left, right: cursors.left }),
+        (None,       Some(right)) => move_both_right(alive_map, &Cursors { left: cursors.right, right }),
+        (None,       None)        => None,
+    }
 }
 
 fn build_alive_map(polymer: &[u8]) -> Vec<bool> {
@@ -40,17 +69,14 @@ fn build_alive_map(polymer: &[u8]) -> Vec<bool> {
 }
 
 fn reduce_polymer(polymer: &[u8], alive_map: &mut [bool]) {
-    let mut left = Some(0);
-    let mut right = Some(1);
-    while let (Some(l), Some(r)) = (left, right) {
-        if is_opposite_unit(polymer[l], polymer[r]) {
-            alive_map[l] = false;
-            alive_map[r] = false;
-            left = move_left(&alive_map, l);
-            right = move_right(&alive_map, r);
+    let mut cursors_opt = Some(Cursors { left: 0, right: 1 });
+    while let Some(cursors) = cursors_opt {
+        if is_opposite_unit(polymer[cursors.left], polymer[cursors.right]) {
+            alive_map[cursors.left] = false;
+            alive_map[cursors.right] = false;
+            cursors_opt = move_both_out(alive_map, &cursors);
         } else {
-            left = move_right(&alive_map, l);
-            right = move_right(&alive_map, r);
+            cursors_opt = move_both_right(alive_map, &cursors);
         }
     }
 }
