@@ -41,7 +41,7 @@ fn metadata_sum(tree: &Tree) -> u32 {
 }
 
 fn node_value(tree: &Tree) -> u32 {
-    if tree.children.len() == 0 {
+    if tree.children.is_empty() {
         metadata_sum(tree)
     } else {
         tree.metadata
