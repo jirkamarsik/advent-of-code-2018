@@ -15,8 +15,9 @@ fn parse_input() -> Vec<String> {
 }
 
 fn frequencies<T>(seq: T) -> HashMap<T::Item, u32>
-where T: Iterator,
-      T::Item: Eq + Hash
+where
+    T: Iterator,
+    T::Item: Eq + Hash,
 {
     let mut freqs = HashMap::new();
 
@@ -50,7 +51,7 @@ fn find_boxes(codes: &[String]) -> Option<String> {
     assert!(codes.iter().all(|code| code.len() == code_length));
 
     for i in 0..code_length {
-        let freqs = frequencies(codes.iter().map(|code| (&code[..i], &code[i+1..])));
+        let freqs = frequencies(codes.iter().map(|code| (&code[..i], &code[i + 1..])));
         if let Some(((left, right), _)) = freqs.iter().find(|&(_, &freq)| freq >= 2) {
             return Some(format!("{}{}", left, right));
         }
@@ -63,7 +64,10 @@ fn main() {
     let codes = parse_input();
     println!("The checksum is {}.", checksum(&codes));
     match find_boxes(&codes) {
-        Some(common_part) => println!("Matching boxes found with common substring '{}'.", common_part),
+        Some(common_part) => println!(
+            "Matching boxes found with common substring '{}'.",
+            common_part
+        ),
         None => println!("No matching boxes found!"),
     }
 }

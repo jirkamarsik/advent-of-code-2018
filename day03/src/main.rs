@@ -119,13 +119,11 @@ fn contested_inches(claims: &[Claim]) -> HashSet<(i32, i32)> {
 }
 
 fn safe_claim(claims: &[Claim]) -> Option<&Claim> {
-    claims
-        .iter()
-        .find(|&claim1| {
-            claims
-                .iter()
-                .all(|claim2| claim1 == claim2 || !is_intersect_rect(&claim1.rect, &claim2.rect))
-        })
+    claims.iter().find(|&claim1| {
+        claims
+            .iter()
+            .all(|claim2| claim1 == claim2 || !is_intersect_rect(&claim1.rect, &claim2.rect))
+    })
 }
 
 fn main() {

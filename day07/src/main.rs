@@ -126,7 +126,6 @@ fn work(mut graph: Graph, n_workers: usize) -> u32 {
 
         time += 1;
 
-
         for worker in workers.iter_mut() {
             *worker = match *worker {
                 WorkerState::Working(step, 1) => {

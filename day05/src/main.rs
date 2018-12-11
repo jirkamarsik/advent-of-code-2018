@@ -38,7 +38,6 @@ where
     polymer.filter(move |&unit| unit != lower_unit && unit != upper_unit)
 }
 
-
 fn find_problematic_unit(polymer: &str) -> (String, usize) {
     (b'A'..=b'Z')
         .map(|upper_unit| {
