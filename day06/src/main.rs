@@ -90,12 +90,7 @@ impl<'a> Iterator for NeighborsIter<'a> {
 fn parse_input() -> Result<Vec<Point>, Box<dyn Error>> {
     let mut buffer = String::new();
     std::io::stdin().read_to_string(&mut buffer)?;
-
-    let mut locations = Vec::new();
-    for line in buffer.lines() {
-        locations.push(line.parse()?)
-    }
-    Ok(locations)
+    buffer.lines().map(|line| line.parse()).collect()
 }
 
 fn distance(a: &Point, b: &Point) -> u32 {

@@ -12,14 +12,10 @@ fn power_level(x: usize, y: usize, serial_number: i32) -> i32 {
 }
 
 fn optimize_power(serial_number: i32) -> (usize, (usize, usize)) {
-    let mut power_grid = [0; (GRID_SIZE + 1) * (GRID_SIZE + 1)];
-
-    fn index(x: usize, y: usize) -> usize {
-        x * (GRID_SIZE + 1) + y
-    }
+    let mut power_grid = [[0; GRID_SIZE + 1]; GRID_SIZE + 1];
 
     for (x, y) in iter_product(1..=GRID_SIZE, 1..=GRID_SIZE) {
-        power_grid[index(x, y)] = power_level(x, y, serial_number);
+        power_grid[x][y] = power_level(x, y, serial_number);
     }
 
     iter_dep_product(1..GRID_SIZE, |square_size| {
@@ -27,7 +23,7 @@ fn optimize_power(serial_number: i32) -> (usize, (usize, usize)) {
     })
     .max_by_key(|&(square_size, (xc, yc))| {
         iter_product(xc..xc + square_size, yc..yc + square_size)
-            .map(|(x, y)| power_grid[index(x, y)])
+            .map(|(x, y)| power_grid[x][y])
             .sum::<i32>()
     })
     .unwrap()

@@ -51,7 +51,6 @@ velocity = < \s* (?P<vx>-?\d+) , \s* (?P<vy>-?\d+) >"
 fn parse_input() -> Vec<Star> {
     let mut buffer = String::new();
     std::io::stdin().read_to_string(&mut buffer).unwrap();
-
     buffer.lines().map(|line| line.parse().unwrap()).collect()
 }
 
