@@ -1,7 +1,6 @@
 extern crate utils;
 
-use utils::iter_dep_product;
-use utils::iter_product;
+use utils::{iter_product, iter_dep_product};
 
 const GRID_SIZE: usize = 300;
 const SERIAL_NUMBER: i32 = 6042;
