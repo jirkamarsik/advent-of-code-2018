@@ -63,7 +63,11 @@ impl RingNode {
 
     pub fn kill_ring(self) {
         let mut this = self;
-        while let Some(next) = this.0.cw.borrow().as_ref() {
+        loop {
+            let next = match this.0.cw.borrow().as_ref() {
+                Some(n) => n.clone(),
+                None => { break; }
+            };
             *this.0.cw.borrow_mut() = None;
             *this.0.ccw.borrow_mut() = None;
             this = next.clone();
