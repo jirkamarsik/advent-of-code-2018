@@ -1,0 +1,8 @@
+[package]
+name = "day13"
+version = "0.1.0"
+authors = ["Jirka Marsik <jiri.marsik89@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+nalgebra = "0.16.12"
